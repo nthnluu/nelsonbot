@@ -27,12 +27,17 @@ def lambda_handler(event, context):
             if 'refreshCount' in event:
                 refresh_count = event['refreshCount']
 
-            nelson_bot.start(month=today.month, day=today.day, year=today.year, username=event['username'],
-                             password=event['password'],
-                             duo_bypass=event['duoBypass'],
-                             slot_preferences=event['slotPreferences'], refresh_count=refresh_count, refresh_interval=2)
+            booking_successful = nelson_bot.start(month=today.month, day=today.day, year=today.year,
+                                                  username=event['username'],
+                                                  password=event['password'],
+                                                  duo_bypass=event['duoBypass'],
+                                                  slot_preferences=event['slotPreferences'],
+                                                  refresh_count=refresh_count, refresh_interval=2)
             nelson_bot.close()
+            return {'success': booking_successful}
         else:
             logger.error("Missing required values!")
+            raise Exception(f"Missing required values!")
     else:
-        return "Hello!"
+        logger.error(f"{event['botType']} isn't a valid bot type!")
+        raise Exception(f"{event['botType']} isn't a valid bot type!")

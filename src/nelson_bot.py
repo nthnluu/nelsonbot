@@ -60,7 +60,7 @@ class NelsonBot:
         return False
 
     def start(self, month: int, day: int, year: int, username: str, password: str, duo_bypass: str,
-              slot_preferences: list, refresh_count: int, refresh_interval: int):
+              slot_preferences: list, refresh_count: int, refresh_interval: int) -> bool:
         chrome_options = self.bot.get_default_chrome_options()
         driver = webdriver.Chrome(chrome_options=chrome_options)
         driver.implicitly_wait(4)
@@ -90,7 +90,7 @@ class NelsonBot:
                 break
             else:
                 # Slots not yet available... retry
-                logger.info(f"Slots not yet available! Retry {attempt}/{refresh_count}")
+                logger.info(f"Slots not yet available! Retry {attempt + 1}/{refresh_count}")
                 time.sleep(refresh_interval)
                 driver.refresh()
                 slots = self.__search_slots(driver, slot_preferences)
@@ -101,6 +101,8 @@ class NelsonBot:
             logger.info("Booking failed!")
 
         driver.quit()
+
+        return booking_successful
 
     def close(self):
         # Remove specific tmp dir of this "run"
