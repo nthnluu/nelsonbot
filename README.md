@@ -1,4 +1,4 @@
-# λ selenium-chromium-lambda
+# bots at brown
 
 How to run automated (Selenium) Headless Chromium in AWS Lambda.
 
@@ -6,24 +6,19 @@ Read full article [https://www.vittorionardone.it/en/2020/06/04/chromium-and-sel
 
 An example about taking a full height screenshot of a given webpage in Python.
 
-## BINARIES UPDATE
+## Bot-specific events
 
-I’ve updated project to successfully use:
-- Chromium 86.0.4240.0
-- Chromedriver 86.0.4240.22.0
-- Selenium 3.14
-
-## LAYERS - NEW!
-
-A Lambda Layer is used to include all required binaries and libs.
-
-## Contents
-
-Selenium wrapper to get a full height screenshot of a given webpage. Code is in `src/webdriver_screenshot.py`.
-
-Lambda source code is in `src/lambda_function.py`. It's a sample function using wrapper to get screenshot of a given URL. Fixed size and full height size screenshots are saved to a S3 bucket.
-
-CloudFormation template to create Lambda stack. Please change `WebSite` parameter to your favorite URL.
+### Nelson Bot
+```json
+{
+    "botType": "nelson",
+    "username": "YOUR BROWN USERNAME",
+    "password": "YOUR BROWN PASSWORD",
+    "duoBypass": "A DUO BYPASS CODE",
+    "refreshCount": 300,  // optional, the number of times to retry.
+    "refreshInterval": 2  // optional, number of seconds to wait between retries
+}
+```
 
 ## Commands
 
@@ -40,7 +35,3 @@ Run these commands in sequence:
 `make docker-build` to prepare Docker image for AWS Lambda offline execution  
 
 `make lambda-run` to execute AWS Lambda in Docker
-
-## Credits
-
-Inspired by [this awesome project](https://github.com/21Buttons/pychromeless)
