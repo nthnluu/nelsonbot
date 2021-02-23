@@ -8,7 +8,7 @@ from selenium import webdriver
 logger = logging.getLogger()
 
 
-class WebDriverScreenshot:
+class Bot:
     def __init__(self):
         self._tmp_folder = '/tmp/{}'.format(uuid.uuid4())
 
@@ -24,7 +24,7 @@ class WebDriverScreenshot:
         if not os.path.exists(self._tmp_folder + '/cache-dir'):
             os.makedirs(self._tmp_folder + '/cache-dir')
 
-    def __get_default_chrome_options(self):
+    def get_default_chrome_options(self):
         chrome_options = webdriver.ChromeOptions()
 
         lambda_options = [
@@ -79,30 +79,6 @@ class WebDriverScreenshot:
         chrome_options.binary_location = "/opt/bin/chromium"
 
         return chrome_options
-
-    def __get_correct_height(self, url, width=1280):
-        chrome_options = self.__get_default_chrome_options()
-        chrome_options.add_argument('--window-size={}x{}'.format(width, 1024))
-        driver = webdriver.Chrome(chrome_options=chrome_options)
-        driver.get(url)
-        height = driver.execute_script(
-            "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight )")
-        driver.quit()
-        return height
-
-    def save_screenshot(self, url, filename, width=1280, height=None):
-        if height is None:
-            height = self.__get_correct_height(url, width=width)
-
-        chrome_options = self.__get_default_chrome_options()
-        chrome_options.add_argument('--window-size={}x{}'.format(width, height))
-        chrome_options.add_argument('--hide-scrollbars')
-
-        driver = webdriver.Chrome(chrome_options=chrome_options)
-        logger.info('Using Chromium version: {}'.format(driver.capabilities['browserVersion']))
-        driver.get(url)
-        driver.save_screenshot(filename)
-        driver.quit()
 
     def close(self):
         # Remove specific tmp dir of this "run"

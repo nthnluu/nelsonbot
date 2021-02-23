@@ -1,34 +1,38 @@
+import datetime
+
 import boto3
-import os
 import logging
-import uuid
-from webdriver_screenshot import WebDriverScreenshot
+from src.nelson_bot import NelsonBot
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 s3 = boto3.client('s3')
 
+
 def lambda_handler(event, context):
-    logger.info('## ENVIRONMENT VARIABLES')
-    logger.info(os.environ)
- 
-    screenshot_file = "{}-{}".format(''.join(filter(str.isalpha, os.environ['URL'])), str(uuid.uuid4()))
-    driver = WebDriverScreenshot()
+    if 'botType' not in event:
+        logger.error("The bot could not run because no bot type was specified!")
+        raise Exception("No bot type specified!")
 
-    logger.info('Generate fixed height screenshot')
-    driver.save_screenshot(os.environ['URL'], '/tmp/{}-fixed.png'.format(screenshot_file), height=1024)
+    if event['botType'] == 'nelson':
+        logger.info('Initializing Nelson Bot...')
+        if ('username' in event) and ('password' in event) and ('duoBypass' in event) and (
+                'slotPreferences' in event):
+            nelson_bot = NelsonBot()
+            today = datetime.datetime.today() + datetime.timedelta(days=4)
+            logger.info(f'Starting Nelson Bot for {today.month}/{today.day}/{today.year}...')
+            refresh_count = 300
 
-    logger.info('Generate full height screenshot')    
-    driver.save_screenshot(os.environ['URL'], '/tmp/{}-full.png'.format(screenshot_file))
+            if 'refreshCount' in event:
+                refresh_count = event['refreshCount']
 
-    driver.close()
-
-    if all (k in os.environ for k in ('BUCKET','DESTPATH')):
-        ## Upload generated screenshot files to S3 bucket.
-        s3.upload_file('/tmp/{}-fixed.png'.format(screenshot_file), 
-                    os.environ['BUCKET'], 
-                    '{}/{}-fixed.png'.format(os.environ['DESTPATH'], screenshot_file))
-        s3.upload_file('/tmp/{}-full.png'.format(screenshot_file), 
-                    os.environ['BUCKET'], 
-                    '{}/{}-full.png'.format(os.environ['DESTPATH'], screenshot_file))
+            nelson_bot.start(month=today.month, day=today.day, year=today.year, username=event['username'],
+                             password=event['password'],
+                             duo_bypass=event['duoBypass'],
+                             slot_preferences=event['slotPreferences'], refresh_count=refresh_count, refresh_interval=2)
+            nelson_bot.close()
+        else:
+            logger.error("Missing required values!")
+    else:
+        return "Hello!"
