@@ -67,9 +67,11 @@ class NelsonBot:
 
         # Open reservation portal
         driver.get("https://bfit.brownrec.com/booking/4a42ba76-754b-48c9-95fd-8df6d4e3fb4d")
+        time.sleep(1)
 
         # Authenticate with credentials
         driver.execute_script("submitExternalLoginForm('Shibboleth')")
+        time.sleep(3)
         BrownAuthentication.authenticate(driver, username, password, duo_bypass)
 
         # Fetch available time slots

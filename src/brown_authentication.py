@@ -15,6 +15,9 @@ class BrownAuthentication:
             raise Exception(f"Credentials incorrectly configured!")
 
         logger.info('Logging in with Brown Authentication as {}...'.format(username))
+        time.sleep(2)
+
+        # authenticate
         username_field = driver.find_element_by_xpath("//input[@id='username']")
         username_field.clear()
         username_field.send_keys(username)
