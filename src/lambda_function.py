@@ -23,16 +23,20 @@ def lambda_handler(event, context):
             today = datetime.datetime.today() + datetime.timedelta(days=4)
             logger.info(f'Starting Nelson Bot for {today.month}/{today.day}/{today.year}...')
             refresh_count = 300
+            refresh_interval = 2
 
             if 'refreshCount' in event:
                 refresh_count = event['refreshCount']
+
+            if 'refreshInterval' in event:
+                refresh_interval = event['refreshInterval']
 
             booking_successful = nelson_bot.start(month=today.month, day=today.day, year=today.year,
                                                   username=event['username'],
                                                   password=event['password'],
                                                   duo_bypass=event['duoBypass'],
                                                   slot_preferences=event['slotPreferences'],
-                                                  refresh_count=refresh_count, refresh_interval=2)
+                                                  refresh_count=refresh_count, refresh_interval=refresh_interval)
             nelson_bot.close()
             return {'success': booking_successful}
         else:
