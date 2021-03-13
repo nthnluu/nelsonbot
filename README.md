@@ -1,11 +1,5 @@
 # bots at brown
 
-How to run automated (Selenium) Headless Chromium in AWS Lambda.
-
-Read full article [https://www.vittorionardone.it/en/2020/06/04/chromium-and-selenium-in-aws-lambda](https://www.vittorionardone.it/en/2020/06/04/chromium-and-selenium-in-aws-lambda)
-
-An example about taking a full height screenshot of a given webpage in Python.
-
 ## Bot-specific events
 
 ### Nelson Bot
